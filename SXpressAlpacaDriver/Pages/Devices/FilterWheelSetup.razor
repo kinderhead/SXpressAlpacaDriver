@@ -12,10 +12,22 @@
 
         @* <label style="margin-top:12px">Enable hardware patch:</label>
         <input type="checkbox" @bind="Patch">
-        <br/> *@
+        <br /> *@
+
+        <label style="margin-top:12px">Allow bidirectional movement:</label>
+        <input type="checkbox" @bind="Bidirectional">
+        <br />
 
         <label style="margin-top:12px;">Move timeout (seconds):</label>
         <input type="number" @bind="Timeout" min="1" max="65535" style="width:20ch;">
+        <br />
+
+        <label style="margin-top:12px">Throw error if timed out:</label>
+        <input type="checkbox" @bind="ThrowIfFail">
+        <br />
+
+        <label style="margin-top:12px">(Debug) Test crash on move:</label>
+        <input type="checkbox" @bind="DebugCrash">
         <br />
 
         <button @onclick="SaveDriverSettings" style="min-width:12ch;">Save</button>
@@ -32,6 +44,9 @@
         @if (FilterWheel.Connected)
         {
             <label>Filter status: @FilterStatus</label>
+            <br />
+
+            <button @onclick="FilterWheel.Query" style="min-width:12ch;">Query</button>
             <br />
 
             <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr 1fr;">
@@ -66,7 +81,11 @@ else
     private string FilterStatus => FilterWheel.Position == -1 ? "Moving" : FilterWheel.Names[FilterWheel.Position];
 
     private bool Patch { get; set; } = ServerSettings.FilterWheel.Patch;
+    private bool Bidirectional { get; set; } = ServerSettings.FilterWheel.Bidirectional;
+    private bool ThrowIfFail { get; set; } = ServerSettings.FilterWheel.ThrowIfFail;
     private ushort Timeout { get; set; } = ServerSettings.FilterWheel.Timeout;
+
+    private bool DebugCrash { get; set; } = ServerSettings.FilterWheel.DebugCrash;
 
     /// <summary>
     /// Current value of the save status message
@@ -83,6 +102,9 @@ else
         {
             // Save the settings to the ServerSettings class
             ServerSettings.FilterWheel.Patch = Patch;
+            ServerSettings.FilterWheel.Bidirectional = Bidirectional;
+            ServerSettings.FilterWheel.ThrowIfFail = ThrowIfFail;
+            ServerSettings.FilterWheel.DebugCrash = DebugCrash;
             ServerSettings.FilterWheel.Timeout = Timeout;
             // Display a success message
             Status = "Driver Settings Saved OK";

@@ -17,9 +17,7 @@ namespace SXpressAlpacaDriver.Data
                 {
                     return false;
                 }
-            }
-
-            );
+            });
         }
 
         public bool UseAuth

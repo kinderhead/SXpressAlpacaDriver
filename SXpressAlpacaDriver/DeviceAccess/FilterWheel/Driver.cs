@@ -22,15 +22,19 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
         private short _position { get; set { field = value; OnChange?.Invoke(this); } } = -1;
         public short Position
         {
-            get => _position;
+            get => Failed && ServerSettings.FilterWheel.ThrowIfFail ? throw new ASCOM.DriverException("Previous move failed to reach the target.") : _position;
             set
             {
                 if (value >= FilterCount || value < 0) throw new ASCOM.DriverException($"Filter position {value} is invalid.");
+                if (ServerSettings.FilterWheel.DebugCrash) throw new ASCOM.DriverException("Debug crash.");
 
                 _position = -1;
                 Move(value);
             }
         }
+
+        public bool Failed { get; private set; } = false;
+
         public bool Connected { get; set { field = value; OnChange?.Invoke(this); } } = false;
 
         public string Description => "Alpaca Starlight Xpress Universal Filter Wheel Driver";
@@ -80,6 +84,12 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
             Connected = false;
         }
 
+        public async void Query()
+        {
+            var query = await Controller.Query();
+            _position = query.Position;
+        }
+
         public async void Move(short position)
         {
             try
@@ -92,10 +102,11 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
                 {
                     var query = await Controller.Query();
 
-                    if (query.Position != -1)
+                    if (query.Position == position)
                     {
                         _position = query.Position;
                         Program.Logger.LogInformation("Movement successful.");
+                        Failed = false;
                         return;
                     }
 
@@ -104,6 +115,7 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
 
                 Program.Logger.LogWarning("Movement failed. Falling back to given position.");
                 _position = position;
+                Failed = true;
             }
             catch (Exception e)
             {

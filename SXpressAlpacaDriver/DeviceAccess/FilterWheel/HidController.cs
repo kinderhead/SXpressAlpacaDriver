@@ -21,7 +21,8 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
 
         public async Task Move(short position)
         {
-            await Write([1, (byte)(0x80 | (position + 1)), 0]);
+            byte pos = ServerSettings.FilterWheel.Bidirectional ? (byte)(0x80 | (position + 1)) : (byte)(position + 1);
+            await Write([1, pos, 0]);
             await Read(new byte[3]); // Ignore result
         }
 

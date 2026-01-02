@@ -30,6 +30,54 @@ namespace SXpressAlpacaDriver
                 }
             }
 
+            internal static bool Bidirectional
+            {
+                get
+                {
+                    if (bool.TryParse(Profile.GetValue("FilterWheelBidirectional", true.ToString()), out bool result))
+                    {
+                        return result;
+                    }
+                    return true;
+                }
+                set
+                {
+                    Profile.WriteValue("FilterWheelBidirectional", value.ToString());
+                }
+            }
+
+            internal static bool ThrowIfFail
+            {
+                get
+                {
+                    if (bool.TryParse(Profile.GetValue("FilterWheelThrowIfFail", false.ToString()), out bool result))
+                    {
+                        return result;
+                    }
+                    return false;
+                }
+                set
+                {
+                    Profile.WriteValue("FilterWheelThrowIfFail", value.ToString());
+                }
+            }
+
+            internal static bool DebugCrash
+            {
+                get
+                {
+                    if (bool.TryParse(Profile.GetValue("FilterWheelDebugCrash", false.ToString()), out bool result))
+                    {
+                        return result;
+                    }
+                    return false;
+                }
+                set
+                {
+                    Profile.WriteValue("FilterWheelDebugCrash", value.ToString());
+                }
+            }
+
             internal static ushort Timeout
             {
                 get
