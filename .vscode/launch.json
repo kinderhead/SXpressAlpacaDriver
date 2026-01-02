@@ -4,7 +4,7 @@
             "name": "Debug",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/StarlightDriver/StarlightDriver.csproj"
+            "projectPath": "${workspaceFolder}/SXpressAlpacaDriver/SXpressAlpacaDriver.csproj"
         }
     ]
 }

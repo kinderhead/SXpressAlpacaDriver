@@ -1,7 +1,7 @@
 using ASCOM.Common;
 using ASCOM.Common.DeviceInterfaces;
 
-namespace StarlightDriver.DeviceAccess.FilterWheel
+namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
 {
     public class Driver(IFilterWheelController controller) : IFilterWheelV3
     {

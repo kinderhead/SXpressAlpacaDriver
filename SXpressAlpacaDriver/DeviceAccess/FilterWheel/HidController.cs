@@ -2,7 +2,7 @@ using System.Text;
 using ASCOM;
 using HidSharp;
 
-namespace StarlightDriver.DeviceAccess.FilterWheel
+namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
 {
     public class HidController : IFilterWheelController
     {

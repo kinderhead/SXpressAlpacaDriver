@@ -1,6 +1,6 @@
 ﻿using ASCOM.Alpaca;
 
-namespace StarlightDriver
+namespace SXpressAlpacaDriver
 {
     internal static class ServerSettings
     {

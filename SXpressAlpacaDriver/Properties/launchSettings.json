@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "StarlightDriver": {
+    "SXpressAlpacaDriver": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,

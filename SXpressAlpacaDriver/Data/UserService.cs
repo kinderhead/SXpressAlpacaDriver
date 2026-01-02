@@ -1,6 +1,7 @@
 ﻿using ASCOM.Alpaca;
 
-namespace StarlightDriver.Data
+
+namespace SXpressAlpacaDriver.Data
 {
     internal class UserService : ASCOM.Alpaca.IUserService
 	{

@@ -1,18 +1,18 @@
 using ASCOM.Alpaca;
 using ASCOM.Common;
-using StarlightDriver.DeviceAccess.FilterWheel;
+using SXpressAlpacaDriver.DeviceAccess.FilterWheel;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace StarlightDriver
+namespace SXpressAlpacaDriver
 {
     public class Program
     {
         //ToDo
         //Fill this with your driver name
-        internal const string DriverID = "StarlightDriver.Alpaca";
+        internal const string DriverID = "SXpressAlpacaDriver.Alpaca";
 
         //Change this to a unique value
         //You should offer a way for the end user to customize this via the command line so it can be changed in the case of a collision.
@@ -20,9 +20,9 @@ namespace StarlightDriver
         internal const int DefaultPort = 34567;
 
         //Fill these out
-        internal const string Manufacturer = "IoIO";
+        internal const string Manufacturer = "Daniel Morgenthaler for IoIO";
 
-        internal const string ServerName = "IoIO Driver Server";
+        internal const string ServerName = "Starlight Xpress Driver Server";
         internal const string ServerVersion = "1.0";
 
         internal static ASCOM.Common.Interfaces.ILogger? Logger;

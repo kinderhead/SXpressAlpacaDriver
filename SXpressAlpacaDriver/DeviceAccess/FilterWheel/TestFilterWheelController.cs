@@ -1,6 +1,6 @@
 using System;
 
-namespace StarlightDriver.DeviceAccess.FilterWheel
+namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
 {
     public class TestFilterWheelController(short size) : IFilterWheelController
     {
