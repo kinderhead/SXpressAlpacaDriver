@@ -1,0 +1,123 @@
+﻿@page "/setup/v1/FilterWheel/{InstanceID:int}/setup"
+@using ASCOM.Common.DeviceInterfaces
+@implements IDisposable
+
+<h3>Filter Wheel Configuration</h3>
+
+@if (ASCOM.Alpaca.DeviceManager.FilterWheels.ContainsKey(InstanceID))
+{
+    <fieldset>
+        <legend>Settings</legend>
+        <br />
+
+        @* <label style="margin-top:12px">Enable hardware patch:</label>
+        <input type="checkbox" @bind="Patch">
+        <br/> *@
+
+        <label style="margin-top:12px;">Move timeout (seconds):</label>
+        <input type="number" @bind="Timeout" min="1" max="65535" style="width:20ch;">
+        <br />
+
+        <button @onclick="SaveDriverSettings" style="min-width:12ch;">Save</button>
+        <label style="color:@StatusColour;"><b>@Status</b></label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Control Panel</legend>
+        <br />
+
+        <label style="margin-top:12px;">Connected: @FilterWheel.Connected</label>
+        <br />
+
+        @if (FilterWheel.Connected)
+        {
+            <label>Filter status: @FilterStatus</label>
+            <br />
+
+            <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr 1fr;">
+                @for (short i = 0; i < FilterWheel.FilterCount; i++)
+                {
+                    short index = i;
+                    <button @onclick="() => FilterWheel.Position = index" style="min-width:12ch;">@FilterWheel.Names[index]</button>
+                }
+            </div>
+            <br />
+
+            <button @onclick="FilterWheel.Disconnect" style="min-width:12ch;">Disconnect</button>
+        }
+        else
+        {
+            <button @onclick="FilterWheel.Connect" style="min-width:12ch;">Connect</button>
+        }
+    </fieldset>
+}
+else
+{
+    <h3>This device does not exist and cannot be configured</h3>
+}
+
+
+@code {
+    [Parameter]
+    public int InstanceID { get; set; }
+
+    public DeviceAccess.FilterWheel.Driver FilterWheel => (DeviceAccess.FilterWheel.Driver) ASCOM.Alpaca.DeviceManager.FilterWheels[InstanceID];
+
+    private string FilterStatus => FilterWheel.Position == -1 ? "Moving" : FilterWheel.Names[FilterWheel.Position];
+
+    private bool Patch { get; set; } = ServerSettings.FilterWheel.Patch;
+    private ushort Timeout { get; set; } = ServerSettings.FilterWheel.Timeout;
+
+    /// <summary>
+    /// Current value of the save status message
+    /// </summary>
+    private string Status { get; set; } = "";
+    /// <summary>
+    /// Colour of the status message - green for success, red for failure
+    /// </summary>
+    private string StatusColour { get; set; } = "green";
+
+    private async void SaveDriverSettings()
+    {
+        try
+        {
+            // Save the settings to the ServerSettings class
+            ServerSettings.FilterWheel.Patch = Patch;
+            ServerSettings.FilterWheel.Timeout = Timeout;
+            // Display a success message
+            Status = "Driver Settings Saved OK";
+            StatusColour = "green";
+            // Notify the application that the UI's Status field has changed so the UI will be updated
+            StateHasChanged();
+            // Wait for 2 seconds and then clear the status message.
+            // Note that this is done asynchronously to ensure the UI remains responsive
+            await Task.Run(async () =>
+            {
+                await Task.Delay(2000);
+                Status = "";
+            });
+        }
+        catch (Exception ex)
+        {
+            Status = $"Settings not saved: {ex.Message}";
+            StatusColour = "red";
+        }
+        // Notify the application that the UI's Status field has changed so the UI will be updated
+        StateHasChanged();
+    }
+
+    private void OnFilterWheelChange(DeviceAccess.FilterWheel.Driver driver)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    protected override void OnInitialized()
+    {
+        FilterWheel.OnChange += OnFilterWheelChange;
+    }
+
+    public void Dispose()
+    {
+        FilterWheel.OnChange -= OnFilterWheelChange;
+    }
+}
