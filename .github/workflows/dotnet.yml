@@ -3,9 +3,9 @@ name: .NET
 on:
   push:
     branches: [ "main" ]
-    paths: |
-      SXpressAlpacaDriver/**/*
-      .github/workflows/dotnet.yml
+    paths:
+      - SXpressAlpacaDriver/**
+      - .github/workflows/dotnet.yml
   pull_request:
     branches: [ "main" ]
 
