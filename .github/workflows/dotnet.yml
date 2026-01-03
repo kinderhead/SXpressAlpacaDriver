@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
     paths: |
-      SXpressAlpacaDriver/**
+      SXpressAlpacaDriver/**/*
       .github/workflows/dotnet.yml
   pull_request:
     branches: [ "main" ]
