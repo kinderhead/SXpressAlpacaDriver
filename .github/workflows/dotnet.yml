@@ -24,8 +24,20 @@ jobs:
     - name: Build
       run: cd SXpressAlpacaDriver && dotnet publish -o dist
 
+    - name: Build Installer
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
+      with:
+        path: SXpressAlpacaDriver/installer.iss
+        options: /O+
+
     - name: Upload
-      uses: actions/upload-artifact@v6.0.0
+      uses: actions/upload-artifact@v6
       with:
         name: build
         path: SXpressAlpacaDriver/dist
+
+    - name: Upload Windows Installer
+      uses: actions/upload-artifact@v6
+      with:
+        name: installer
+        path: 'SXpressAlpacaDriver/Output/*.exe'
