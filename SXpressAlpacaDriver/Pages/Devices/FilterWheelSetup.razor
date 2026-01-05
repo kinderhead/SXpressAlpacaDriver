@@ -1,4 +1,5 @@
 ﻿@page "/setup/v1/FilterWheel/{InstanceID:int}/setup"
+@using ASCOM.Common
 @using ASCOM.Common.DeviceInterfaces
 @implements IDisposable
 
@@ -31,7 +32,7 @@
         <br />
 
         <button @onclick="SaveDriverSettings" style="min-width:12ch;">Save</button>
-        <label style="color:@StatusColour;"><b>@Status</b></label>
+        <label style="color:@StatusColor;"><b>@Status</b></label>
     </fieldset>
 
     <fieldset>
@@ -39,6 +40,7 @@
         <br />
 
         <label style="margin-top:12px;">Connected: @FilterWheel.Connected</label>
+        <label style="color:@ControlPanelStatusColor;margin-left:12px;"><b>@ControlPanelStatus</b></label>
         <br />
 
         @if (FilterWheel.Connected)
@@ -46,23 +48,23 @@
             <label>Filter status: @FilterStatus</label>
             <br />
 
-            <button @onclick="FilterWheel.Query" style="min-width:12ch;">Query</button>
+            <button @onclick='WrapFunc(FilterWheel.Query, "", "Error querying filter wheel")' style="min-width:12ch;">Query</button>
             <br />
 
             <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr 1fr;">
                 @for (short i = 0; i < FilterWheel.FilterCount; i++)
                 {
                     short index = i;
-                    <button @onclick="() => FilterWheel.Position = index" style="min-width:12ch;">@FilterWheel.Names[index]</button>
+                    <button @onclick='WrapFunc(() => FilterWheel.Position = index, "", "Error moving filter wheel")' style="min-width:12ch;">@FilterWheel.Names[index]</button>
                 }
             </div>
             <br />
 
-            <button @onclick="FilterWheel.Disconnect" style="min-width:12ch;">Disconnect</button>
+            <button @onclick='WrapFunc(FilterWheel.Disconnect, "Disconnected", "Error disconnecting from filter wheel")' style="min-width:12ch;">Disconnect</button>
         }
         else
         {
-            <button @onclick="FilterWheel.Connect" style="min-width:12ch;">Connect</button>
+            <button @onclick='WrapFunc(FilterWheel.Connect, "Connected", "Error connecting to filter wheel")' style="min-width:12ch;">Connect</button>
         }
     </fieldset>
 }
@@ -87,14 +89,38 @@ else
 
     private bool DebugCrash { get; set; } = ServerSettings.FilterWheel.DebugCrash;
 
-    /// <summary>
-    /// Current value of the save status message
-    /// </summary>
     private string Status { get; set; } = "";
-    /// <summary>
-    /// Colour of the status message - green for success, red for failure
-    /// </summary>
-    private string StatusColour { get; set; } = "green";
+    private string StatusColor { get; set; } = "green";
+
+    private string ControlPanelStatus { get; set; } = "";
+    private string ControlPanelStatusColor { get; set; } = "red";
+
+    private Action WrapFunc(Action func, string successMsg, string errorMsg)
+    {
+        return async () =>
+        {
+            try
+            {
+                func();
+
+                ControlPanelStatusColor = "green";
+                ControlPanelStatus = successMsg;
+                StateHasChanged();
+
+                await Task.Delay(2000);
+                ControlPanelStatus = "";
+                StateHasChanged();
+            }
+            catch (Exception e)
+            {
+                ControlPanelStatusColor = "red";
+                ControlPanelStatus = errorMsg;
+                StateHasChanged();
+
+                Program.Logger.LogError($"{errorMsg}: {e.Message}");
+            }
+        };
+    }
 
     private async void SaveDriverSettings()
     {
@@ -108,7 +134,7 @@ else
             ServerSettings.FilterWheel.Timeout = Timeout;
             // Display a success message
             Status = "Driver Settings Saved OK";
-            StatusColour = "green";
+            StatusColor = "green";
             // Notify the application that the UI's Status field has changed so the UI will be updated
             StateHasChanged();
             // Wait for 2 seconds and then clear the status message.
@@ -122,7 +148,7 @@ else
         catch (Exception ex)
         {
             Status = $"Settings not saved: {ex.Message}";
-            StatusColour = "red";
+            StatusColor = "red";
         }
         // Notify the application that the UI's Status field has changed so the UI will be updated
         StateHasChanged();

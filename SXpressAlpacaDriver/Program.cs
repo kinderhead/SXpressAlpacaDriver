@@ -36,7 +36,7 @@ namespace SXpressAlpacaDriver
             //You shouldn't need to do anything in the Startup and Logging or Finish Building and Start Server regions
 
             //For Debug ConsoleLogger is very nice. For production TraceLogger is recommended.
-            Logger = new ASCOM.Tools.TraceLogger("SXpressAlpacaDriver", true);
+            Logger = new DualLogger("SXpressAlpacaDriver");
 
             //This region contains startup and logging features, most of the time you shouldn't need to customize this
             //You can add custom Command Line arguments here

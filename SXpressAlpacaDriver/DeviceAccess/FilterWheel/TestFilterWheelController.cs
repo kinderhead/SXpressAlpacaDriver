@@ -24,7 +24,7 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
             _ = Task.Run(async () =>
             {
                 await Task.Delay(5000);
-                //this.position = position;
+                this.position = position;
             });
         }
 
