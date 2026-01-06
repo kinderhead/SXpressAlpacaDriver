@@ -1,5 +1,6 @@
 using System.Text;
 using ASCOM;
+using ASCOM.Common;
 using HidSharp;
 
 namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
@@ -12,6 +13,8 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
         {
             var dev = DeviceList.Local.GetHidDeviceOrNull(VENDOR_ID, PRODUCT_ID) ?? throw new DriverException("Failed to locate filter wheel. Is it connected?");
             stream = dev.Open();
+            stream.ReadTimeout = 1000;
+            stream.WriteTimeout = 1000;
         }
 
         public void Disconnect()
@@ -40,7 +43,21 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
         private async Task Write(byte[] mem)
         {
             if (stream is null) throw new DriverException("Filter wheel is not connected.");
-            await stream.WriteAsync(mem);
+
+            while (true)
+            {
+                try
+                {
+                    await stream.WriteAsync(mem);
+                }
+                catch (Exception)
+                {
+                    Program.Logger.LogWarning("Failed to write to filter wheel.");
+                    continue;
+                }
+
+                break;
+            }
 
             var builder = new StringBuilder("Wrote to filter wheel:\n");
 
