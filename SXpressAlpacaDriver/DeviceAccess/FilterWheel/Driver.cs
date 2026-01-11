@@ -59,9 +59,12 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
 
             Controller.Connect();
 
-            var query = await Controller.Query();
-            FilterCount = query.Size;
-            _position = query.Position;
+            while (FilterCount == 0)
+            {
+                var query = await Controller.Query();
+                FilterCount = query.Size;
+                _position = query.Position;
+            }
 
             Connecting = false;
             Connected = true;
