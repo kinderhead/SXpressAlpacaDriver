@@ -73,6 +73,7 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
 
                 if (query.Size <= 0)
                 {
+                    Program.Logger.LogWarning("Filter wheel returned invalid size. Retrying...");
                     await Task.Delay(1000);
                     continue;
                 }
@@ -84,6 +85,8 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
 
             Connecting = false;
             _connected = true;
+
+            Program.Logger.LogInformation("Connected.");
         }
 
         public async void Disconnect()
@@ -101,6 +104,8 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
             Connecting = false;
 
             _connected = false;
+
+            Program.Logger.LogInformation("Disconnected.");
         }
 
         public async void Query()

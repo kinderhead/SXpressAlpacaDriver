@@ -53,6 +53,7 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
                 catch (Exception)
                 {
                     Program.Logger.LogWarning("Failed to write to filter wheel.");
+                    await Task.Delay(1000);
                     continue;
                 }
 
