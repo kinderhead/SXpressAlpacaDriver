@@ -35,7 +35,15 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
 
         public bool Failed { get; private set; } = false;
 
-        public bool Connected { get; set { field = value; OnChange?.Invoke(this); } } = false;
+        private bool _connected { get; set { field = value; OnChange?.Invoke(this); } } = false;
+        public bool Connected
+        {
+            get => _connected; set
+            {
+                if (value) Connect();
+                else Disconnect();
+            }
+        }
 
         public string Description => "Alpaca Starlight Xpress Universal Filter Wheel Driver";
         public string DriverInfo => $"Alpaca Starlight Xpress Universal Filter Wheel Driver v{DriverVersion}";
@@ -47,7 +55,7 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
 
         public async void Connect()
         {
-            if (Connected)
+            if (_connected)
             {
                 Program.Logger.LogWarning("Already connected to filter wheel.");
                 return;
@@ -59,20 +67,28 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
 
             Controller.Connect();
 
-            while (FilterCount == 0)
+            while (true)
             {
                 var query = await Controller.Query();
+
+                if (query.Size <= 0)
+                {
+                    await Task.Delay(1000);
+                    continue;
+                }
+
                 FilterCount = query.Size;
                 _position = query.Position;
+                break;
             }
 
             Connecting = false;
-            Connected = true;
+            _connected = true;
         }
 
         public async void Disconnect()
         {
-            if (!Connected)
+            if (!_connected)
             {
                 Program.Logger.LogWarning("Already disconnected from filter wheel.");
                 return;
@@ -84,7 +100,7 @@ namespace SXpressAlpacaDriver.DeviceAccess.FilterWheel
             Controller.Disconnect();
             Connecting = false;
 
-            Connected = false;
+            _connected = false;
         }
 
         public async void Query()
