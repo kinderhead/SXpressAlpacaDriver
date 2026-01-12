@@ -79,6 +79,8 @@ namespace SXpressAlpacaDriver
                 return;
             }
 
+            args = [.. args, "--contentRoot", AppContext.BaseDirectory];
+
             //Reset all stored settings if requested
             if (args?.Any(str => str.Contains("--reset")) ?? false)
             {
